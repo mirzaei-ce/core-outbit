@@ -1,0 +1,6 @@
+usr/local/bin/outbit-qt usr/bin
+share/pixmaps/outbit32.xpm usr/share/pixmaps
+share/pixmaps/outbit16.xpm usr/share/pixmaps
+share/pixmaps/outbit128.png usr/share/pixmaps
+debian/outbit-qt.desktop usr/share/applications
+debian/outbit-qt.protocol usr/share/kde4/services/

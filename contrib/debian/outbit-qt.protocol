@@ -1,0 +1,11 @@
+[Protocol]
+exec=outbit-qt '%u'
+protocol=outbit
+input=none
+output=none
+helper=true
+listing=
+reading=false
+writing=false
+makedir=false
+deleting=false

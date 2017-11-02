@@ -1,0 +1,7 @@
+[main]
+host = https://www.transifex.com
+
+[outbit.qt-translation-012x]
+file_filter = src/qt/locale/outbit_<lang>.ts
+source_file = src/qt/locale/outbit_en.ts
+source_lang = en

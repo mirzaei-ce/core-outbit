@@ -1,0 +1,5 @@
+Building Outbit
+
+See doc/build-*.md for instructions on building outbitd,
+the intended-for-services, no-graphical-interface, reference
+implementation of Outbit.

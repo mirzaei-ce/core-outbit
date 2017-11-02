@@ -1,0 +1,22 @@
+[Unit]
+Description=Outbit's distributed currency daemon
+After=network.target
+
+[Service]
+User=outbit
+Group=outbit
+
+Type=forking
+PIDFile=/var/lib/outbitd/outbitd.pid
+ExecStart=/usr/bin/outbitd -daemon -pid=/var/lib/outbitd/outbitd.pid \
+-conf=/etc/outbit/outbit.conf -datadir=/var/lib/outbitd -disablewallet
+
+Restart=always
+PrivateTmp=true
+TimeoutStopSec=60s
+TimeoutStartSec=2s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target

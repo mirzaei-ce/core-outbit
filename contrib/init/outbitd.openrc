@@ -1,0 +1,92 @@
+#!/sbin/runscript
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/outbit/.outbit" ]; then
+	OUTBITD_DEFAULT_DATADIR="/var/lib/outbit/.outbit"
+else
+	OUTBITD_DEFAULT_DATADIR="/var/lib/outbitd"
+fi
+
+OUTBITD_CONFIGFILE=${OUTBITD_CONFIGFILE:-/etc/outbit/outbit.conf}
+OUTBITD_PIDDIR=${OUTBITD_PIDDIR:-/var/run/outbitd}
+OUTBITD_PIDFILE=${OUTBITD_PIDFILE:-${OUTBITD_PIDDIR}/outbitd.pid}
+OUTBITD_DATADIR=${OUTBITD_DATADIR:-${OUTBITD_DEFAULT_DATADIR}}
+OUTBITD_USER=${OUTBITD_USER:-${OUTBIT_USER:-outbit}}
+OUTBITD_GROUP=${OUTBITD_GROUP:-outbit}
+OUTBITD_BIN=${OUTBITD_BIN:-/usr/bin/outbitd}
+OUTBITD_NICE=${OUTBITD_NICE:-${NICELEVEL:-0}}
+OUTBITD_OPTS="${OUTBITD_OPTS:-${OUTBIT_OPTS}}"
+
+name="Outbit Core Daemon"
+description="Outbit cryptocurrency P2P network daemon"
+
+command="/usr/bin/outbitd"
+command_args="-pid=\"${OUTBITD_PIDFILE}\" \
+		-conf=\"${OUTBITD_CONFIGFILE}\" \
+		-datadir=\"${OUTBITD_DATADIR}\" \
+		-daemon \
+		${OUTBITD_OPTS}"
+
+required_files="${OUTBITD_CONFIGFILE}"
+start_stop_daemon_args="-u ${OUTBITD_USER} \
+			-N ${OUTBITD_NICE} -w 2000"
+pidfile="${OUTBITD_PIDFILE}"
+
+# The retry schedule to use when stopping the daemon. Could be either
+# a timeout in seconds or multiple signal/timeout pairs (like
+# "SIGKILL/180 SIGTERM/300")
+retry="${OUTBITD_SIGTERM_TIMEOUT}"
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${OUTBITD_USER}:${OUTBITD_GROUP}" \
+	"${OUTBITD_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${OUTBITD_USER}:${OUTBITD_GROUP}" \
+	"${OUTBITD_PIDDIR}"
+
+	checkpath -f \
+	-o ${OUTBITD_USER}:${OUTBITD_GROUP} \
+	-m 0660 \
+	${OUTBITD_CONFIGFILE}
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if ! grep -qs '^rpcpassword=' "${OUTBITD_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run outbitd."
+		eerror "The setting must appear in ${OUTBITD_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following"
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is also recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"Outbit Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}

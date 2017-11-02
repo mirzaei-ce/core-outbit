@@ -1,0 +1,33 @@
+# /etc/conf.d/outbitd: config file for /etc/init.d/outbitd
+
+# Config file location
+#OUTBITD_CONFIGFILE="/etc/outbit/outbit.conf"
+
+# What directory to write pidfile to?  (created and owned by $OUTBITD_USER)
+#OUTBITD_PIDDIR="/var/run/outbitd"
+
+# What filename to give the pidfile
+#OUTBITD_PIDFILE="${OUTBITD_PIDDIR}/outbitd.pid"
+
+# Where to write outbitd data (be mindful that the blockchain is large)
+#OUTBITD_DATADIR="/var/lib/outbitd"
+
+# User and group to own outbitd process
+#OUTBITD_USER="outbit"
+#OUTBITD_GROUP="outbit"
+
+# Path to outbitd executable
+#OUTBITD_BIN="/usr/bin/outbitd"
+
+# Nice value to run outbitd under
+#OUTBITD_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+OUTBITD_OPTS="-disablewallet"
+
+# The timeout in seconds OpenRC will wait for outbitd to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+OUTBITD_SIGTERM_TIMEOUT=60
